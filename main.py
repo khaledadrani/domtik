@@ -14,7 +14,7 @@ def read_root():
     return {"message": "Hello, World!"}
 
 
-app.include_router(llm_generation_api, tags=["LLM GENERATION API"])
+app.include_router(llm_generation_api)
 
 # Run the FastAPI application with uvicorn
 if __name__ == "__main__":
