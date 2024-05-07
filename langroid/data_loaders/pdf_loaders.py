@@ -1,24 +1,23 @@
-from pathlib import Path
+from typing import Optional, Generator
 
 import fitz
 
 
-def read_pdf(file_path):
-    with fitz.open(file_path) as doc:  # open document
-        text = chr(12).join([page.get_text() for page in doc])
-    return {
-        "text": text,
-        "file_path": file_path
-    }
+def read_pdf(file_path: str,
+             start_index: Optional[int] = 0,
+             page_count: Optional[int] = 1) -> Generator[str, None, None]:
+    """
+    Read text from a PDF file.
 
+    Args:
+        file_path (str): The path to the PDF file.
+        start_index (Optional[int]): The index of the starting page (default is 0).
+        page_count (Optional[int]): The number of pages to read (default is 1).
 
-def post_process_single_record(record, dest, min_length=None):
-    if min_length and len(record["text"]) < min_length:
-        print(record["file_path"], "too short for length ", min_length)
-
-    path = Path(record['file_path'])
-
-    final_file_name = path.stem
-
-    with open(Path(dest) / str(final_file_name + ".txt"), "w") as f:
-        f.write(record["text"])
+    Yields:
+        str: Text content of each page in the specified range.
+    """
+    with fitz.open(file_path) as document:
+        for index in range(start_index, (start_index + page_count)):
+            page = document[index]
+            yield page.get_text()
